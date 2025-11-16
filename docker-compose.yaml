@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.19.0
+    container_name: es01
+    environment:
+      - discovery.type=single-node
+    networks:
+      - elastic-network
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.19.0
+    container_name: kib01
+    networks:
+      - elastic-network
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+networks:
+  elastic-network:
+
+volumes:
+  esdata:
