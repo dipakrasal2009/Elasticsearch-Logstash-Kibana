@@ -1,0 +1,205 @@
+✅ Elasticsearch Important Commands + Explanations
+
+***********************************************************************************************************
+
+🟦 Cluster & Node Information
+-------------------------------------------------------------------------------------------------
+1. Get Cluster Health
+GET /_cat/health
+
+
+Shows overall cluster status → green, yellow, red, number of nodes, active shards, etc.
+
+2. List Nodes
+GET /_cat/nodes
+
+
+Displays all nodes with CPU %, RAM, roles (master, data), IP, etc.
+
+3. List All Indices
+GET /_cat/indices
+
+
+Quick view of all indices in the cluster.
+
+GET /_cat/indices?v
+
+
+Same command but with column headers → easier to read.
+
+-----------------------------------------------------------------------------------------------------
+🟩 Index Management
+-----------------------------------------------------------------------------------------------------
+4. Create an Index
+PUT /college
+{
+  "settings": {
+    "number_of_shards": 2,
+    "number_of_replicas": 3
+  }
+}
+
+
+Creates an index with custom shards & replicas.
+
+5. Get Index Settings
+GET /students/_settings
+
+
+Shows existing index settings like shard count, replica count, analyzers, etc.
+
+6. Update Index Settings
+
+(Only replicas can be updated later)
+
+PUT /students/_settings
+{
+  "number_of_replicas": 2
+}
+
+7. Delete an Index
+DELETE /students
+
+
+Deletes the entire index and stored documents.
+----------------------------------------------------------------------------------------------------
+🟧 Document Operations (CRUD)
+----------------------------------------------------------------------------------------------------
+8. Insert a Document
+POST /students/_doc
+{
+  "Name": "Pratik",
+  "age": "22",
+  "city": "Talegaon",
+  "mobile": "9837287382"
+}
+
+
+Auto‐generates an internal _id.
+
+9. Insert Document with Custom ID
+PUT /students/_doc/1
+{
+  "Name": "Dipak",
+  "age": "22",
+  "city": "Pune"
+}
+
+10. Get a Document
+GET /students/_doc/1
+
+
+Fetch a document by ID.
+
+11. Update a Document
+POST /students/_update/1
+{
+  "doc": {
+    "city": "Mumbai"
+  }
+}
+
+12. Delete a Document
+DELETE /students/_doc/1
+------------------------------------------------------------------------------------------------
+🟨 Search Operations
+------------------------------------------------------------------------------------------------
+13. Match All Documents
+GET /students/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+14. Search by a Field
+GET /students/_search
+{
+  "query": {
+    "match": {
+      "city": "Pune"
+    }
+  }
+}
+
+15. Search Using Query Parameter
+GET /students/_search?q=city:Pune
+
+16. Filter Search (Exact match, no scoring)
+GET /students/_search
+{
+  "query": {
+    "term": {
+      "age": "22"
+    }
+  }
+}
+------------------------------------------------------------------------------------------------
+🟪 Bulk API
+------------------------------------------------------------------------------------------------
+17. Bulk Insert / Update
+POST /_bulk
+{ "index": { "_index": "students", "_id": 1 } }
+{ "Name": "Amit", "age": 25 }
+{ "update": { "_index": "students", "_id": 1 } }
+{ "doc": { "city": "Delhi" } }
+
+
+Execute multiple operations in one request → very fast for large data.
+------------------------------------------------------------------------------------------------
+🟥 Mapping (Schema Design)
+------------------------------------------------------------------------------------------------
+18. Create Index with Mapping
+PUT /employees
+{
+  "mappings": {
+    "properties": {
+      "name": { "type": "text" },
+      "age": { "type": "integer" },
+      "salary": { "type": "float" },
+      "join_date": { "type": "date" }
+    }
+  }
+}
+
+19. Get Mapping
+GET /employees/_mapping
+----------------------------------------------------------------------------------------------------
+🟫 Alias Management
+----------------------------------------------------------------------------------------------------
+20. Create Alias
+POST /_aliases
+{
+  "actions": [
+    { "add": { "index": "students", "alias": "stud_alias" } }
+  ]
+}
+
+21. View Aliases
+GET /_cat/aliases
+---------------------------------------------------------------------------------------------------
+🟩 Index Lifecycle
+--------------------------------------------------------------------------------------------------
+22. Close an Index
+POST /students/_close
+
+
+Index becomes readonly and inactive.
+
+23. Open a Closed Index
+POST /students/_open
+----------------------------------------------------------------------------------------------------
+🟦 Cluster Stats
+----------------------------------------------------------------------------------------------------
+24. Get Cluster Stats
+GET /_cluster/stats
+
+
+Shows cluster-wide storage, nodes, index stats.
+
+25. Get Node Stats
+GET /_nodes/stats
+
+
+CPU, JVM, memory, file system stats per node.
+**********************************************************************************************************************************
